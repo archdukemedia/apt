@@ -1,0 +1,97 @@
+# Rebuilds the apt repository from the apps' GitHub Releases, signs it and
+# publishes it on GitHub Pages, then installs from it in clean containers.
+# Each app's Release workflow starts this with a repository_dispatch
+# ("app-released") after publishing a release; the daily run is a safety net
+# in case a dispatch was lost. See README.md.
+name: Publish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  repository_dispatch:
+    types: [app-released]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * *"
+
+concurrency:
+  group: publish-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and sign
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # A short-lived token from the Volpes-Media apt GitHub App that can only
+      # read the app repositories (they are private).
+      - name: Get a token to read the app releases
+        id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APT_APP_ID }}
+          private-key: ${{ secrets.APT_APP_PRIVATE_KEY }}
+          owner: volpesmedia
+          repositories: theatre,tvcast,trader-bittorrent-client
+          permission-contents: read
+
+      - name: Download the newest releases
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        run: scripts/fetch-debs.sh "$RUNNER_TEMP/debs"
+
+      - name: Import the signing key
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          install -d -m 700 "$GNUPGHOME"
+          printf '%s\n' "$APT_SIGNING_KEY" | gpg --batch --quiet --import
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+
+      - name: Build and sign the repository
+        run: scripts/build-repo.sh "$RUNNER_TEMP/debs" _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Publish on GitHub Pages
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  check:
+    name: Install on ${{ matrix.image }}
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["ubuntu:24.04", "debian:trixie"]
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+      # GitHub Pages can take a minute to serve the new files everywhere.
+      - name: Wait for the new files
+        run: sleep 60
+      - name: Follow the README on a clean system
+        run: scripts/check-install.sh
