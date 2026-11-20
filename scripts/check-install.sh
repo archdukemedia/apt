@@ -31,6 +31,15 @@ for app in "${APPS[@]}"; do
   done
 done
 
+echo "== The download links give the newest version"
+for app in "${APPS[@]}"; do
+  wget -qO "/tmp/$app.deb" "https://volpesmedia.github.io/apt/$app.deb"
+  got="$(dpkg-deb --field "/tmp/$app.deb" Version)"
+  want="$(apt-cache madison "$app" | awk '{print $3}' | sort -V | tail -1)"
+  echo "$app.deb is $got"
+  [ "$got" = "$want" ] || { echo "::error::$app.deb is $got, newest is $want"; status=1; }
+done
+
 echo "== An older version upgrades with apt upgrade"
 old="$(apt-cache madison theatre | awk '{print $3}' | sort -V | head -1)"
 new="$(apt-cache madison theatre | awk '{print $3}' | sort -V | tail -1)"
