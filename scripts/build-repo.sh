@@ -9,6 +9,7 @@
 #   <out>/dists/stable/{Release,InRelease,Release.gpg}
 #   <out>/dists/stable/main/binary-amd64/Packages{,.gz,.xz}
 #   <out>/volpesmedia.gpg, volpesmedia.asc, volpesmedia.sources, index.html
+#   <out>/<package>.deb   the newest version, for download links
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEBS="${1:?usage: build-repo.sh <debs-dir> <out-dir>}"
@@ -37,6 +38,15 @@ for deb in "$DEBS"/*.deb; do
   count=$((count + 1))
 done
 [ "$count" -gt 0 ] || { echo "No packages found in $DEBS" >&2; exit 1; }
+
+# A link that always downloads the newest version of each app, for people
+# who install by opening the .deb: <out>/<package>.deb (theatre.deb, ...).
+# The package then offers to add this repository (debconf question).
+for dir in "$OUT"/pool/main/*/*/; do
+  pkg="$(basename "$dir")"
+  newest="$(ls "$dir" | sort -V | tail -1)"
+  cp "$dir/$newest" "$OUT/$pkg.deb"
+done
 
 TMP_RELEASE="$(mktemp)"
 trap 'rm -f "$TMP_RELEASE"' EXIT
