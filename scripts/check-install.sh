@@ -32,8 +32,10 @@ for app in "${APPS[@]}"; do
 done
 
 echo "== The download links give the newest version"
+# GitHub Pages' CDN may serve the previous file for up to 10 minutes after a
+# deploy; a query string asks for the new one, as a browser would after then.
 for app in "${APPS[@]}"; do
-  wget -qO "/tmp/$app.deb" "https://volpesmedia.github.io/apt/$app.deb"
+  wget -qO "/tmp/$app.deb" "https://volpesmedia.github.io/apt/$app.deb?check=$(date +%s)"
   got="$(dpkg-deb --field "/tmp/$app.deb" Version)"
   want="$(apt-cache madison "$app" | awk '{print $3}' | sort -V | tail -1)"
   echo "$app.deb is $got"
