@@ -57,7 +57,7 @@ pool/main/<letter>/<package>/<package>_<version>_amd64.deb
 | Where | Name | What |
 |---|---|---|
 | this repo | secret `APT_SIGNING_KEY` | the armored private signing key (no passphrase). Never committed; the owner keeps a backup |
-| this repo and each app repo | variable `APT_APP_ID`, secret `APT_APP_PRIVATE_KEY` | the **Arch-Duke Media apt** GitHub App (Contents: read and write, installed on theatre, tvcast, trader-bittorrent-client and apt). Each workflow asks for a short-lived token limited to what it needs: read the app repos here, write to this repo (to send the dispatch) in the apps |
+| this repo and each app repo | variable `APT_APP_ID`, secret `APT_APP_PRIVATE_KEY` | the **Arch-Duke Media apt** GitHub App (Contents: read and write, installed on theatre, tvcast, merchant and apt). Each workflow asks for a short-lived token limited to what it needs: read the app repos here, write to this repo (to send the dispatch) in the apps |
 
 Rotating the signing key: make a new key, replace `site/archdukemedia.gpg` and `site/archdukemedia.asc` (and their `volpesmedia.*` copies) and the `APT_SIGNING_KEY` secret together, and `packaging/deb/archdukemedia.gpg` in each app (their CI fails until it matches), and tell users to download the keyring again (the install step's second line). `scripts/build-repo.sh` signs only with the key whose public half is in `site/`, so a mismatched secret fails the build instead of publishing something users can't verify.
 
