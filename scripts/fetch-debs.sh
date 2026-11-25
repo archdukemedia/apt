@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Downloads the .deb files of the newest releases of each Volpes-Media app.
+# Downloads the .deb files of the newest releases of each Arch-Duke Media app.
 #   scripts/fetch-debs.sh <out-dir>
 # GitHub Releases are the source of truth: nothing is kept between runs, the
 # whole repository is rebuilt from them each time. Needs GH_TOKEN with read
@@ -7,7 +7,7 @@
 set -euo pipefail
 OUT="${1:?usage: fetch-debs.sh <out-dir>}"
 KEEP="${KEEP:-3}"   # releases kept per app, so people can go back a version
-APPS=(volpesmedia/theatre volpesmedia/tvcast volpesmedia/trader-bittorrent-client)
+APPS=(archdukemedia/theatre archdukemedia/tvcast archdukemedia/trader-bittorrent-client)
 
 mkdir -p "$OUT"
 for repo in "${APPS[@]}"; do

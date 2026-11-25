@@ -1,5 +1,5 @@
 Types: deb
-URIs: https://volpesmedia.github.io/apt
+URIs: https://archdukemedia.github.io/apt
 Suites: stable
 Components: main
 Architectures: amd64

@@ -2,13 +2,13 @@
 # Builds the apt repository from a folder of .deb files.
 #   scripts/build-repo.sh <debs-dir> <out-dir>
 # Signs it with the key in $GNUPGHOME whose fingerprint matches
-# site/volpesmedia.gpg; with UNSIGNED=1 it skips signing (local tries only).
+# site/archdukemedia.gpg; with UNSIGNED=1 it skips signing (local tries only).
 #
 # Layout (one suite for every supported system, see README.md):
 #   <out>/pool/main/<letter>/<package>/<package>_<version>_amd64.deb
 #   <out>/dists/stable/{Release,InRelease,Release.gpg}
 #   <out>/dists/stable/main/binary-amd64/Packages{,.gz,.xz}
-#   <out>/volpesmedia.gpg, volpesmedia.asc, volpesmedia.sources, index.html
+#   <out>/archdukemedia.gpg, archdukemedia.asc, archdukemedia.sources, index.html
 #   <out>/<package>.deb   the newest version, for download links
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -57,25 +57,25 @@ gzip -9nk "$BIN/Packages"
 xz -9k "$BIN/Packages"
 
 apt-ftparchive \
-  -o APT::FTPArchive::Release::Origin="Volpes-Media" \
-  -o APT::FTPArchive::Release::Label="Volpes-Media" \
+  -o APT::FTPArchive::Release::Origin="Arch-Duke Media" \
+  -o APT::FTPArchive::Release::Label="Arch-Duke Media" \
   -o APT::FTPArchive::Release::Suite="stable" \
   -o APT::FTPArchive::Release::Codename="stable" \
   -o APT::FTPArchive::Release::Architectures="amd64" \
   -o APT::FTPArchive::Release::Components="main" \
-  -o APT::FTPArchive::Release::Description="Theatre, TvCast and BitTrader from Volpes-Media" \
+  -o APT::FTPArchive::Release::Description="Theatre, TvCast and BitTrader from Arch-Duke Media" \
   release dists/stable > "$TMP_RELEASE"
 mv "$TMP_RELEASE" dists/stable/Release
 chmod 644 dists/stable/Release
 
 if [ "${UNSIGNED:-0}" != 1 ]; then
   # Sign with the key whose public half is published, never another one.
-  fpr="$(gpg --show-keys --with-colons "$ROOT/site/volpesmedia.gpg" | awk -F: '/^fpr/{print $10; exit}')"
+  fpr="$(gpg --show-keys --with-colons "$ROOT/site/archdukemedia.gpg" | awk -F: '/^fpr/{print $10; exit}')"
   gpg --batch --yes --digest-algo SHA512 --local-user "$fpr" --clearsign \
       --output dists/stable/InRelease dists/stable/Release
   gpg --batch --yes --digest-algo SHA512 --local-user "$fpr" --armor --detach-sign \
       --output dists/stable/Release.gpg dists/stable/Release
-  gpgv --keyring "$ROOT/site/volpesmedia.gpg" dists/stable/InRelease
+  gpgv --keyring "$ROOT/site/archdukemedia.gpg" dists/stable/InRelease
 fi
 
 echo "Built $OUT with $count packages:"
