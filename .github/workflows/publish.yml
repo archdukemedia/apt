@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # A short-lived token from the Volpes-Media apt GitHub App that can only
+      # A short-lived token from the Arch-Duke Media apt GitHub App that can only
       # read the app repositories (they are private).
       - name: Get a token to read the app releases
         id: app
@@ -38,7 +38,7 @@ jobs:
         with:
           app-id: ${{ vars.APT_APP_ID }}
           private-key: ${{ secrets.APT_APP_PRIVATE_KEY }}
-          owner: volpesmedia
+          owner: archdukemedia
           repositories: theatre,tvcast,trader-bittorrent-client
           permission-contents: read
 

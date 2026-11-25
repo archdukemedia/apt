@@ -1,4 +1,4 @@
-# Volpes-Media apt repository
+# Arch-Duke Media apt repository
 
 Install **Theatre**, **TvCast** and **BitTrader** with `apt`, and get every new version through your usual updates (`sudo apt upgrade` or the Software Updater).
 
@@ -8,7 +8,7 @@ Works on Zorin OS 18, Ubuntu 24.04 or newer, Linux Mint 22 or newer and Debian 1
 
 ### The easy way: download and open
 
-Download [theatre.deb](https://volpesmedia.github.io/apt/theatre.deb), [tvcast.deb](https://volpesmedia.github.io/apt/tvcast.deb) or [bittrader.deb](https://volpesmedia.github.io/apt/bittrader.deb) (always the newest version), open it, and click **Install** in the Software app. Installing it adds this repository, so new versions arrive with your usual updates. In a terminal (`sudo apt install ./theatre.deb`) it asks first, as VS Code's package does. Each app's `packaging/deb/` has the question and the scripts that add the repository; purging the last Volpes-Media app removes it again.
+Download [theatre.deb](https://archdukemedia.github.io/apt/theatre.deb), [tvcast.deb](https://archdukemedia.github.io/apt/tvcast.deb) or [bittrader.deb](https://archdukemedia.github.io/apt/bittrader.deb) (always the newest version), open it, and click **Install** in the Software app. Installing it adds this repository, so new versions arrive with your usual updates. In a terminal (`sudo apt install ./theatre.deb`) it asks first, as VS Code's package does. Each app's `packaging/deb/` has the question and the scripts that add the repository; purging the last Arch-Duke Media app removes it again.
 
 ### Or add the repository yourself
 
@@ -16,8 +16,8 @@ Add the repository once:
 
 ```bash
 sudo install -d -m 0755 /etc/apt/keyrings
-sudo wget -qO /etc/apt/keyrings/volpesmedia.gpg https://volpesmedia.github.io/apt/volpesmedia.gpg
-sudo wget -qO /etc/apt/sources.list.d/volpesmedia.sources https://volpesmedia.github.io/apt/volpesmedia.sources
+sudo wget -qO /etc/apt/keyrings/archdukemedia.gpg https://archdukemedia.github.io/apt/archdukemedia.gpg
+sudo wget -qO /etc/apt/sources.list.d/archdukemedia.sources https://archdukemedia.github.io/apt/archdukemedia.sources
 sudo apt update
 ```
 
@@ -29,11 +29,11 @@ sudo apt install theatre tvcast bittrader
 
 The signing key's fingerprint is `AB9E FDAD BAD8 571D FC20  DC82 457D E12A 62F3 AD84`. The key is trusted only for this repository (`Signed-By` in the `.sources` file), not for the rest of your system.
 
-To remove the repository: `sudo rm /etc/apt/sources.list.d/volpesmedia.sources /etc/apt/keyrings/volpesmedia.gpg && sudo apt update`.
+To remove the repository: `sudo rm /etc/apt/sources.list.d/archdukemedia.sources /etc/apt/keyrings/archdukemedia.gpg && sudo apt update`.
 
 ## How it works
 
-- **Hosted on GitHub Pages** at https://volpesmedia.github.io/apt/. This git repository holds only the scripts, the workflow and the public key; no `.deb` is ever committed.
+- **Hosted on GitHub Pages** at https://archdukemedia.github.io/apt/. This git repository holds only the scripts, the workflow and the public key; no `.deb` is ever committed.
 - **The apps' GitHub Releases are the source of truth.** The **Publish** workflow (`.github/workflows/publish.yml`) downloads the `.deb` of the newest 3 releases of each app (`scripts/fetch-debs.sh`), so people can go back a version with `sudo apt install theatre=<version>`; then it builds the repository with `apt-ftparchive` and signs it (`scripts/build-repo.sh`). Nothing is kept between runs, so there is no state to get out of step.
 - **When it runs:** each app's Release workflow sends a `repository_dispatch` (`app-released`) after publishing a release; also on every push to main, by hand (*Actions → Publish → Run workflow*), and once a day as a safety net.
 - **Checked on clean systems:** after publishing, the workflow follows the steps above word for word in fresh `ubuntu:24.04` and `debian:trixie` containers, installs all three apps, checks every program finds its libraries, and checks that an older Theatre upgrades with `apt upgrade` (`scripts/check-install.sh`).
@@ -42,9 +42,11 @@ To remove the repository: `sudo rm /etc/apt/sources.list.d/volpesmedia.sources /
 ### Layout
 
 ```
-volpesmedia.gpg, volpesmedia.asc        public signing key (binary and armored)
-theatre.deb, tvcast.deb, bittrader.deb  the newest version of each app, for download links
-volpesmedia.sources                     the deb822 source file users download
+archdukemedia.gpg, archdukemedia.asc      public signing key (binary and armored)
+archdukemedia.sources                     the deb822 source file users download
+volpesmedia.gpg, volpesmedia.asc,         the same key, and a source file pointing here, under
+  volpesmedia.sources                     the names used before the rename to Arch-Duke Media
+theatre.deb, tvcast.deb, bittrader.deb    the newest version of each app, for download links
 dists/stable/{InRelease,Release,Release.gpg}
 dists/stable/main/binary-amd64/Packages{,.gz,.xz}
 pool/main/<letter>/<package>/<package>_<version>_amd64.deb
@@ -55,9 +57,9 @@ pool/main/<letter>/<package>/<package>_<version>_amd64.deb
 | Where | Name | What |
 |---|---|---|
 | this repo | secret `APT_SIGNING_KEY` | the armored private signing key (no passphrase). Never committed; the owner keeps a backup |
-| this repo and each app repo | variable `APT_APP_ID`, secret `APT_APP_PRIVATE_KEY` | the **Volpes-Media apt** GitHub App (Contents: read and write, installed on theatre, tvcast, trader-bittorrent-client and apt). Each workflow asks for a short-lived token limited to what it needs: read the app repos here, write to this repo (to send the dispatch) in the apps |
+| this repo and each app repo | variable `APT_APP_ID`, secret `APT_APP_PRIVATE_KEY` | the **Arch-Duke Media apt** GitHub App (Contents: read and write, installed on theatre, tvcast, trader-bittorrent-client and apt). Each workflow asks for a short-lived token limited to what it needs: read the app repos here, write to this repo (to send the dispatch) in the apps |
 
-Rotating the signing key: make a new key, replace `site/volpesmedia.gpg` and `site/volpesmedia.asc` and the `APT_SIGNING_KEY` secret together, and `packaging/deb/volpesmedia.gpg` in each app (their CI fails until it matches), and tell users to download the keyring again (the install step's second line). `scripts/build-repo.sh` signs only with the key whose public half is in `site/`, so a mismatched secret fails the build instead of publishing something users can't verify.
+Rotating the signing key: make a new key, replace `site/archdukemedia.gpg` and `site/archdukemedia.asc` (and their `volpesmedia.*` copies) and the `APT_SIGNING_KEY` secret together, and `packaging/deb/archdukemedia.gpg` in each app (their CI fails until it matches), and tell users to download the keyring again (the install step's second line). `scripts/build-repo.sh` signs only with the key whose public half is in `site/`, so a mismatched secret fails the build instead of publishing something users can't verify.
 
 ## Try it locally
 

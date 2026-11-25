@@ -15,8 +15,8 @@ sudo() { "$@"; }   # containers run as root and have no sudo
 
 echo "== The README's steps"
 sudo install -d -m 0755 /etc/apt/keyrings
-sudo wget -qO /etc/apt/keyrings/volpesmedia.gpg https://volpesmedia.github.io/apt/volpesmedia.gpg
-sudo wget -qO /etc/apt/sources.list.d/volpesmedia.sources https://volpesmedia.github.io/apt/volpesmedia.sources
+sudo wget -qO /etc/apt/keyrings/archdukemedia.gpg https://archdukemedia.github.io/apt/archdukemedia.gpg
+sudo wget -qO /etc/apt/sources.list.d/archdukemedia.sources https://archdukemedia.github.io/apt/archdukemedia.sources
 sudo apt update
 sudo apt install -y "${APPS[@]}"
 
@@ -35,7 +35,7 @@ echo "== The download links give the newest version"
 # GitHub Pages' CDN may serve the previous file for up to 10 minutes after a
 # deploy; a query string asks for the new one, as a browser would after then.
 for app in "${APPS[@]}"; do
-  wget -qO "/tmp/$app.deb" "https://volpesmedia.github.io/apt/$app.deb?check=$(date +%s)"
+  wget -qO "/tmp/$app.deb" "https://archdukemedia.github.io/apt/$app.deb?check=$(date +%s)"
   got="$(dpkg-deb --field "/tmp/$app.deb" Version)"
   want="$(apt-cache madison "$app" | awk '{print $3}' | sort -V | tail -1)"
   echo "$app.deb is $got"
