@@ -1,6 +1,6 @@
 # Arch-Duke Media apt repository
 
-Install **Theatre**, **TvCast** and **BitTrader** with `apt`, and get every new version through your usual updates (`sudo apt upgrade` or the Software Updater).
+Install **Theatre**, **TvCast** and **Merchant** with `apt`, and get every new version through your usual updates (`sudo apt upgrade` or the Software Updater).
 
 Works on Zorin OS 18, Ubuntu 24.04 or newer, Linux Mint 22 or newer and Debian 13 or newer, on 64-bit PCs (amd64). Debian 12 is too old (its libadwaita is 1.2).
 
@@ -8,7 +8,7 @@ Works on Zorin OS 18, Ubuntu 24.04 or newer, Linux Mint 22 or newer and Debian 1
 
 ### The easy way: download and open
 
-Download [theatre.deb](https://archdukemedia.github.io/apt/theatre.deb), [tvcast.deb](https://archdukemedia.github.io/apt/tvcast.deb) or [bittrader.deb](https://archdukemedia.github.io/apt/bittrader.deb) (always the newest version), open it, and click **Install** in the Software app. Installing it adds this repository, so new versions arrive with your usual updates. In a terminal (`sudo apt install ./theatre.deb`) it asks first, as VS Code's package does. Each app's `packaging/deb/` has the question and the scripts that add the repository; purging the last Arch-Duke Media app removes it again.
+Download [theatre.deb](https://archdukemedia.github.io/apt/theatre.deb), [tvcast.deb](https://archdukemedia.github.io/apt/tvcast.deb) or [merchant.deb](https://archdukemedia.github.io/apt/merchant.deb) (always the newest version), open it, and click **Install** in the Software app. Installing it adds this repository, so new versions arrive with your usual updates. In a terminal (`sudo apt install ./theatre.deb`) it asks first, as VS Code's package does. Each app's `packaging/deb/` has the question and the scripts that add the repository; purging the last Arch-Duke Media app removes it again.
 
 ### Or add the repository yourself
 
@@ -24,7 +24,7 @@ sudo apt update
 Then install the apps you want:
 
 ```bash
-sudo apt install theatre tvcast bittrader
+sudo apt install theatre tvcast merchant
 ```
 
 The signing key's fingerprint is `AB9E FDAD BAD8 571D FC20  DC82 457D E12A 62F3 AD84`. The key is trusted only for this repository (`Signed-By` in the `.sources` file), not for the rest of your system.
@@ -46,7 +46,7 @@ archdukemedia.gpg, archdukemedia.asc      public signing key (binary and armored
 archdukemedia.sources                     the deb822 source file users download
 volpesmedia.gpg, volpesmedia.asc,         the same key, and a source file pointing here, under
   volpesmedia.sources                     the names used before the rename to Arch-Duke Media
-theatre.deb, tvcast.deb, bittrader.deb    the newest version of each app, for download links
+theatre.deb, tvcast.deb, merchant.deb     the newest version of each app, for download links
 dists/stable/{InRelease,Release,Release.gpg}
 dists/stable/main/binary-amd64/Packages{,.gz,.xz}
 pool/main/<letter>/<package>/<package>_<version>_amd64.deb
