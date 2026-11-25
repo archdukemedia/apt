@@ -39,7 +39,7 @@ jobs:
           app-id: ${{ vars.APT_APP_ID }}
           private-key: ${{ secrets.APT_APP_PRIVATE_KEY }}
           owner: archdukemedia
-          repositories: theatre,tvcast,trader-bittorrent-client
+          repositories: theatre,tvcast,merchant
           permission-contents: read
 
       - name: Download the newest releases

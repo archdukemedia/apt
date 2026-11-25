@@ -7,7 +7,7 @@
 set -euo pipefail
 OUT="${1:?usage: fetch-debs.sh <out-dir>}"
 KEEP="${KEEP:-3}"   # releases kept per app, so people can go back a version
-APPS=(archdukemedia/theatre archdukemedia/tvcast archdukemedia/trader-bittorrent-client)
+APPS=(archdukemedia/theatre archdukemedia/tvcast archdukemedia/merchant)
 
 mkdir -p "$OUT"
 for repo in "${APPS[@]}"; do
