@@ -6,7 +6,7 @@
 #   scripts/check-install.sh
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
-APPS=(theatre tvcast merchant)
+APPS=(theatre herald merchant)
 
 # A desktop already has these; a bare container doesn't.
 apt-get update -qq
