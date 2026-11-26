@@ -16,8 +16,9 @@ DEBS="${1:?usage: build-repo.sh <debs-dir> <out-dir>}"
 OUT="${2:?usage: build-repo.sh <debs-dir> <out-dir>}"
 # Only these packages belong here. Merchant was packaged as "trader" (a name
 # Ubuntu already uses, so those are left out on purpose) and then as
-# "bittrader", kept so its older versions stay installable.
-PACKAGES=" theatre tvcast merchant bittrader "
+# "bittrader"; Herald was packaged as "tvcast". The old names are kept so
+# their older versions stay installable.
+PACKAGES=" theatre herald merchant tvcast bittrader "
 
 rm -rf "$OUT"
 mkdir -p "$OUT/pool/main" "$OUT/dists/stable/main/binary-amd64"
@@ -64,7 +65,7 @@ apt-ftparchive \
   -o APT::FTPArchive::Release::Codename="stable" \
   -o APT::FTPArchive::Release::Architectures="amd64" \
   -o APT::FTPArchive::Release::Components="main" \
-  -o APT::FTPArchive::Release::Description="Theatre, TvCast and Merchant from Arch-Duke Media" \
+  -o APT::FTPArchive::Release::Description="Theatre, Herald and Merchant from Arch-Duke Media" \
   release dists/stable > "$TMP_RELEASE"
 mv "$TMP_RELEASE" dists/stable/Release
 chmod 644 dists/stable/Release
